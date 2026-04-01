@@ -1,6 +1,6 @@
 # ADP Bank Demo
 
-Conference demo showcasing Redpanda's AI Data Platform (ADP) — an internal bank employee tool that lets staff look up customers, check account balances, and investigate overdrafts using natural language.
+Conference demo showcasing Redpanda's Agentic Data Plane (ADP) — an internal bank employee tool that lets staff look up customers, check account balances, and investigate overdrafts using natural language.
 
 ## What's in this repo
 
