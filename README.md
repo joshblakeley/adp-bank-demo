@@ -8,6 +8,7 @@ Conference demo showcasing Redpanda's Agentic Data Plane (ADP) — an internal b
 |---|---|
 | `2026-04-01-bank-demo-mcp-design.md` | Full design spec — MCP server tools, data model, architecture, implementation steps |
 | `bank-demo-seed.sql` | Postgres schema DDL + mock seed data (10 customers, ~30 days of transactions) |
+| `restore/` | Shell scripts to recreate all Redpanda Cloud objects if the cluster is wiped |
 
 ## Architecture
 
@@ -53,11 +54,21 @@ Mock seed data (bank-demo-seed.sql)
 
 ## Re-creating from scratch
 
-See **Implementation Steps** in `2026-04-01-bank-demo-mcp-design.md` for the full step-by-step guide. High level:
+If starting fresh, first spin up RDS:
 
 1. Spin up RDS Postgres `db.t3.micro` in `us-east-2`, database `bank_demo`
-2. Configure security group — allow TCP 5432 from Redpanda NAT gateway `3.138.236.26`
-3. Run `bank-demo-seed.sql` to create schema and load mock data
-4. Create Redpanda secret `BANK_DEMO_DSN` with the RDS connection string
-5. Create the "Bank Internal" MCP server via Redpanda Cloud API
-6. Create the "Bank Internal Assistant" AI agent and attach the MCP server
+2. Enable "Publicly accessible" and add an inbound TCP 5432 rule for the Redpanda NAT gateway `3.138.236.26`
+
+Then run the restore scripts in order (requires `rpk` CLI authenticated via `rpk cloud login`):
+
+```bash
+cd restore/
+
+RDS_HOST=<your-rds-endpoint> RDS_PASS=<your-password> ./01-seed-database.sh
+RDS_HOST=<your-rds-endpoint> RDS_PASS=<your-password> ./02-create-secret.sh
+./03-create-mcp-server.sh   # prints new MCP_SERVER_ID
+./04-create-service-account.sh  # prints new SERVICE_ACCOUNT_SECRET
+MCP_SERVER_ID=<id-from-step-3> SERVICE_ACCOUNT_SECRET=<secret-from-step-4> ./05-create-agent.sh
+```
+
+See `restore/README.md` for full details. No tokens or secrets are hardcoded — all credentials are passed as environment variables or fetched at runtime via `rpk`.
