@@ -9,6 +9,7 @@ Conference demo showcasing Redpanda's Agentic Data Plane (ADP) — an internal b
 | `2026-04-01-bank-demo-mcp-design.md` | Full design spec — MCP server tools, data model, architecture, implementation steps |
 | `bank-demo-seed.sql` | Postgres schema DDL + mock seed data (10 customers, ~30 days of transactions) |
 | `restore/` | Shell scripts to recreate all Redpanda Cloud objects if the cluster is wiped |
+| `server.js` + `public/` | PandaBank web chat UI — run with `npm start`, open http://localhost:3000 |
 
 ## Architecture
 
