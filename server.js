@@ -2,12 +2,17 @@ const express = require('express');
 const path = require('path');
 
 // Load .env if present
-try { require('fs').readFileSync('.env').toString().split('\n').forEach(l => { const [k,v] = l.split('='); if (k && v) process.env[k.trim()] = v.trim(); }); } catch {}
+try { require('fs').readFileSync('.env').toString().split('\n').forEach(l => { const [k,...rest] = l.split('='); const v = rest.join('='); if (k && v) process.env[k.trim()] = v.trim(); }); } catch {}
 
 const app = express();
 const PORT = 3000;
 const AGENT_URL = 'https://d76o3ig5s2pc73bj5uag.ai-agents.d6kjl4h19241bg3ek3h0.clusters.rdpa.co';
 const TOKEN_URL = 'https://auth.prd.cloud.redpanda.com/oauth/token';
+
+if (!process.env.REDPANDA_CLIENT_ID || !process.env.REDPANDA_CLIENT_SECRET) {
+  console.error('FATAL: REDPANDA_CLIENT_ID and REDPANDA_CLIENT_SECRET must be set. Copy .env.example to .env and fill in credentials.');
+  process.exit(1);
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
